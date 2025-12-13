@@ -29,3 +29,12 @@ func (h *InventoryHandler) GetItemByCategoryId(id int) (dto.CategoryResponseDTO,
 		Description: item.Description,
 	}, nil
 }
+
+func (h *InventoryHandler) AddNewCategory(newCategoryData dto.CreateCategoryDTO) error {
+	newCategory := newCategoryData
+	if err := h.service.AddNewCategory(newCategory); err != nil {
+		return err
+	}
+
+	return nil
+}

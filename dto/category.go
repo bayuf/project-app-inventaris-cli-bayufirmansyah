@@ -5,12 +5,14 @@ type GetItemByCategoryDTO struct {
 }
 
 type CreateCategoryDTO struct {
-	Name string
+	Name        string
+	Description string
 }
 
 type UpdateCategoryDTO struct {
-	ID   int
-	Name string
+	ID          int
+	Name        string
+	Description string
 }
 
 type CategoryResponseDTO struct {

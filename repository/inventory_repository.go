@@ -9,8 +9,12 @@ import (
 )
 
 type InventoryIface interface {
+	// View
 	GetItemsCategory() ([]model.ItemCategory, error)
 	GetItemByCategoryId(model.Item) (model.ItemCategory, error)
+
+	// Add
+	AddNewCategory(model.ItemCategory) error
 }
 
 type Inventory struct {
@@ -39,6 +43,7 @@ func (i *Inventory) GetItemsCategory() ([]model.ItemCategory, error) {
 		if err := rows.Scan(&ItemCategory.ID, &ItemCategory.Name, &ItemCategory.Description); err != nil {
 			return nil, err
 		}
+
 		ItemsCategory = append(ItemsCategory, ItemCategory)
 	}
 
@@ -57,4 +62,19 @@ func (i *Inventory) GetItemByCategoryId(item model.Item) (model.ItemCategory, er
 	}
 
 	return ItemCategory, nil
+}
+
+func (i *Inventory) AddNewCategory(newCategory model.ItemCategory) error {
+	query := `INSERT INTO categories (name, description) VALUES ($1, $2) ON CONFLICT DO NOTHING;`
+
+	cmdTag, err := i.DB.Exec(context.Background(), query, newCategory.Name, newCategory.Description)
+	if err != nil {
+		return err
+	}
+
+	if cmdTag.RowsAffected() == 0 {
+		return errors.New("category already exist")
+	}
+
+	return nil
 }
