@@ -1,7 +1,27 @@
 package cmd
 
-import "github.com/bayuf/project-app-inventaris-cli-bayufirmansyah/handler"
+import (
+	"fmt"
+
+	"github.com/bayuf/project-app-inventaris-cli-bayufirmansyah/handler"
+)
 
 func Homepage(h handler.InventoryHandler) {
 
+	// item, err := h.GetItemByCategoryId(12)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// } else {
+	// 	fmt.Printf("ID : %d Name: %s Description: % s", item.ID, item.Name, item.Description)
+	// }
+
+	items, err := h.GetItemCategory()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println("ID---|Category---------|Description-------------|")
+		for _, item := range items {
+			fmt.Printf("%d   |%s            |%s                      |\n", item.ID, item.Name, item.Description)
+		}
+	}
 }

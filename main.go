@@ -1,8 +1,7 @@
 package main
 
 import (
-	"fmt"
-	"os"
+	"log"
 
 	"github.com/bayuf/project-app-inventaris-cli-bayufirmansyah/cmd"
 	"github.com/bayuf/project-app-inventaris-cli-bayufirmansyah/db"
@@ -19,8 +18,7 @@ func main() {
 	// init db
 	dbConn, err := db.Connect()
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 	defer dbConn.Close()
 
