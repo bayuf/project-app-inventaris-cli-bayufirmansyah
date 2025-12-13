@@ -14,6 +14,7 @@ type InventoryIface interface {
 	// View
 	GetItemsCategory() ([]model.ItemCategory, error)
 	GetItemByCategoryId(model.ItemCategory) (model.ItemCategory, error)
+	GetItems() ([]model.Item, error)
 
 	// Add
 	AddNewCategory(model.ItemCategory) error
@@ -35,9 +36,11 @@ func NewInventoryRepository(db db.PgxIface) *Inventory {
 	}
 }
 
+// Categories Function
+
 func (i *Inventory) GetItemsCategory() ([]model.ItemCategory, error) {
 
-	query := `SELECT id, name, description FROM categories WHERE deleted_at IS NULL`
+	query := `SELECT id, name, description FROM categories WHERE deleted_at IS NULL ORDER BY id ASC`
 	rows, err := i.DB.Query(context.Background(), query)
 	if err != nil {
 		return nil, err
@@ -134,6 +137,41 @@ func (i *Inventory) UpdateCategory(newData model.ItemCategory) error {
 	return nil
 }
 
-func (i *Inventory) DeleteCategoryById(id model.ItemCategory) error {
+func (i *Inventory) DeleteCategoryById(item model.ItemCategory) error {
+	categoryId := item.ID
+	query := `UPDATE categories SET deleted_at=NOW(), updated_at=NOW() WHERE id=$1 AND deleted_at IS NULL RETURNING id`
+
+	var deletedId int
+	if err := i.DB.QueryRow(context.Background(), query, categoryId).Scan(&deletedId); err != nil {
+		if deletedId == 0 {
+			return errors.New("id not found or not valid")
+		}
+
+		return err
+	}
+
 	return nil
+}
+
+// Items Function
+func (i *Inventory) GetItems() ([]model.Item, error) {
+	query := `SELECT id, name, purchase_price, purchase_date, useful_life_days
+	FROM items WHERE deleted_at IS NULL`
+
+	rows, err := i.DB.Query(context.Background(), query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var items []model.Item
+	for rows.Next() {
+		item := model.Item{}
+
+		rows.Scan(&item.ID, &item.Name, &item.Price, &item.BuyDate, &item.TotalUsed)
+
+		items = append(items, item)
+	}
+
+	return items, nil
 }

@@ -37,6 +37,7 @@ func Homepage(h handler.InventoryHandler) {
 			UpdateCategory(h)
 		case 5:
 			utils.ClearScreen()
+			DeleteCategory(h)
 		case 6:
 			utils.ClearScreen()
 			fmt.Println("Keluar dari aplikasi ....")

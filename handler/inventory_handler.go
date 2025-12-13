@@ -13,6 +13,7 @@ func NewInventoryHandler(service service.InventoryServiceIface) InventoryHandler
 	return InventoryHandler{service: service}
 }
 
+// Category Function
 func (h *InventoryHandler) GetItemsCategory() ([]dto.CategoryResponseDTO, error) {
 	return h.service.GetItemsCategory()
 }
@@ -46,4 +47,21 @@ func (h *InventoryHandler) UpdateCategory(newData dto.UpdateCategoryDTO) error {
 	}
 
 	return nil
+}
+
+func (h *InventoryHandler) DeleteCategoryById(id int) error {
+	if err := h.service.DeleteCategoryById(dto.UpdateCategoryDTO{ID: id}); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Item Function
+func (h *InventoryHandler) GetItems() ([]dto.ItemResponseDTO, error) {
+	items, err := h.service.GetItems()
+	if err != nil {
+		return nil, err
+	}
+
+	return items, nil
 }

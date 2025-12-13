@@ -1,5 +1,11 @@
 package model
 
+import (
+	"time"
+
+	"github.com/shopspring/decimal"
+)
+
 type ItemCategory struct {
 	ID          int
 	Name        string
@@ -8,6 +14,9 @@ type ItemCategory struct {
 }
 
 type Item struct {
-	ID   int
-	Name string
+	ID        int
+	Name      string
+	Price     decimal.Decimal
+	BuyDate   time.Time
+	TotalUsed int
 }

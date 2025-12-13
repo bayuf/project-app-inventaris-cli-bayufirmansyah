@@ -3,7 +3,6 @@ package cmd
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
@@ -44,8 +43,8 @@ func UpdateCategory(handl handler.InventoryHandler) {
 
 		if err := handl.UpdateCategory(dto.UpdateCategoryDTO{
 			ID:          categoryId,
-			Name:        &newName,
-			Description: &newDescription,
+			Name:        newName,
+			Description: newDescription,
 		}); err != nil {
 			utils.ClearScreen()
 			fmt.Println(err)
@@ -80,13 +79,4 @@ func UpdateCategory(handl handler.InventoryHandler) {
 		}
 
 	}
-}
-
-func showAllCategories(handl handler.InventoryHandler) {
-	items, err := handl.GetItemsCategory()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	utils.PrintTableCategory(items)
 }

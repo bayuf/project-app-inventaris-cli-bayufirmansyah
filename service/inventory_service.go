@@ -12,6 +12,10 @@ type InventoryServiceIface interface {
 
 	AddNewCategory(dto.CreateCategoryDTO) error
 	UpdateCategory(dto.UpdateCategoryDTO) error
+	DeleteCategoryById(dto.UpdateCategoryDTO) error
+
+	// Item
+	GetItems() ([]dto.ItemResponseDTO, error)
 }
 
 type InventoryService struct {
@@ -24,6 +28,7 @@ func NewInventoryService(repo repository.InventoryIface) *InventoryService {
 	}
 }
 
+// Categories Function
 func (s *InventoryService) GetItemsCategory() ([]dto.CategoryResponseDTO, error) {
 	items, err := s.repo.GetItemsCategory()
 	if err != nil {
@@ -71,11 +76,40 @@ func (s *InventoryService) UpdateCategory(newData dto.UpdateCategoryDTO) error {
 
 	if err := s.repo.UpdateCategory(model.ItemCategory{
 		ID:          newData.ID,
-		Name:        *newData.Name,
-		Description: *newData.Description,
+		Name:        newData.Name,
+		Description: newData.Description,
 	}); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (s *InventoryService) DeleteCategoryById(item dto.UpdateCategoryDTO) error {
+	if err := s.repo.DeleteCategoryById(model.ItemCategory{ID: item.ID}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Item Function
+func (s *InventoryService) GetItems() ([]dto.ItemResponseDTO, error) {
+	items, err := s.repo.GetItems()
+	if err != nil {
+		return nil, err
+	}
+
+	itemsResponse := []dto.ItemResponseDTO{}
+	for _, v := range items {
+		item := dto.ItemResponseDTO{
+			ID:        v.ID,
+			Name:      v.Name,
+			Price:     v.Price,
+			BuyDate:   v.BuyDate,
+			TotalUsed: v.TotalUsed,
+		}
+		itemsResponse = append(itemsResponse, item)
+	}
+	return itemsResponse, nil
 }

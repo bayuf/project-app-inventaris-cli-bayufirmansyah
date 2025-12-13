@@ -1,16 +1,20 @@
 package dto
 
+import (
+	"time"
+
+	"github.com/shopspring/decimal"
+)
+
 type CreateItemDTO struct {
 	Name       string
 	CategoryID int
-	Quantity   int
 }
 
 type UpdateItemDTO struct {
 	ID         int
 	Name       *string
 	CategoryID *int
-	Quantity   *int
 }
 
 type GetItemDTO struct {
@@ -19,10 +23,9 @@ type GetItemDTO struct {
 }
 
 type ItemResponseDTO struct {
-	ID         int
-	Name       string
-	CategoryID int
-	Quantity   int
-	CreateAt   string
-	UpdateAt   string
+	ID        int
+	Name      string
+	Price     decimal.Decimal
+	BuyDate   time.Time
+	TotalUsed int
 }

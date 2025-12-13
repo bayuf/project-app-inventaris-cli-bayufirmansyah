@@ -39,3 +39,12 @@ func GetItemsCategory(handl handler.InventoryHandler) {
 	}
 
 }
+
+func showAllCategories(handl handler.InventoryHandler) {
+	items, err := handl.GetItemsCategory()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	utils.PrintTableCategory(items)
+}
