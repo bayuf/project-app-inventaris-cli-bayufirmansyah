@@ -15,9 +15,8 @@ func GetItemsCategory(handl handler.InventoryHandler) {
 		log.Fatal(err)
 	}
 
-	fmt.Println("=================== INVENTARIS KANTOR LUMOSHIVE =====================")
 	for {
-		utils.ClearScreen()
+		fmt.Println("=================== INVENTARIS KANTOR LUMOSHIVE =====================")
 		utils.PrintTableCategory(items)
 		fmt.Println("1. Kembali ke Homepage")
 		fmt.Println("2. Keluar Aplikasi")
@@ -27,10 +26,14 @@ func GetItemsCategory(handl handler.InventoryHandler) {
 
 		switch choice {
 		case 1:
+			utils.ClearScreen()
 			return
 		case 2:
 			fmt.Println("keluar aplikasi ....")
 			os.Exit(0)
+		default:
+			utils.ClearScreen()
+			fmt.Println("Invalid Input")
 		}
 
 	}

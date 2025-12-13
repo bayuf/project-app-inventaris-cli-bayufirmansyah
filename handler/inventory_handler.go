@@ -27,6 +27,7 @@ func (h *InventoryHandler) GetItemByCategoryId(id int) (dto.CategoryResponseDTO,
 		ID:          item.ID,
 		Name:        item.Name,
 		Description: item.Description,
+		Quantity:    item.Quantity,
 	}, nil
 }
 

@@ -25,3 +25,22 @@ func PrintTableCategory(itemsCategory []dto.CategoryResponseDTO) {
 	}
 	table.Render()
 }
+
+func PrintTableCategoryById(itemsCategory []dto.CategoryResponseDTO) {
+	table := tablewriter.NewWriter(os.Stdout)
+
+	table.Header([]string{"No", "ID", "Kategori", "Deskripsi Kategori", "Quantity"})
+
+	for i, t := range itemsCategory {
+		row := []string{
+			fmt.Sprintf("%d", i+1),
+			fmt.Sprintf("%d", t.ID),
+			t.Name,
+			t.Description,
+			fmt.Sprintf("%d", t.Quantity),
+		}
+
+		table.Append(row)
+	}
+	table.Render()
+}

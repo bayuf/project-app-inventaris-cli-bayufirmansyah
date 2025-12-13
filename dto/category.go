@@ -19,4 +19,5 @@ type CategoryResponseDTO struct {
 	ID          int
 	Name        string
 	Description string
+	Quantity    int
 }

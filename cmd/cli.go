@@ -11,7 +11,6 @@ import (
 func Homepage(h handler.InventoryHandler) {
 	utils.ClearScreen()
 	for {
-		utils.ClearScreen()
 		fmt.Println("=================== INVENTARIS KANTOR LUMOSHIVE =====================")
 		fmt.Println("1. Lihat List Kategori Barang")
 		fmt.Println("2. Lihat Detail Kategori Barang")
@@ -29,16 +28,22 @@ func Homepage(h handler.InventoryHandler) {
 			GetItemsCategory(h)
 		case 2:
 			utils.ClearScreen()
+			GetItemsCategoryById(h)
 		case 3:
 			utils.ClearScreen()
+			AddNewCategory(h)
 		case 4:
 			utils.ClearScreen()
+			UpdateCategory(h)
 		case 5:
 			utils.ClearScreen()
 		case 6:
 			utils.ClearScreen()
 			fmt.Println("Keluar dari aplikasi ....")
 			os.Exit(0)
+		default:
+			utils.ClearScreen()
+			fmt.Println("invalid input")
 		}
 	}
 }

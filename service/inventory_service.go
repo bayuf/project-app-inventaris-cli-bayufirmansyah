@@ -47,7 +47,7 @@ func (s *InventoryService) GetItemsCategory() ([]dto.CategoryResponseDTO, error)
 
 func (s *InventoryService) GetItemByCategoryId(item dto.GetItemByCategoryDTO) (dto.CategoryResponseDTO, error) {
 
-	itemCategory, err := s.repo.GetItemByCategoryId(model.Item{ID: item.ID})
+	itemCategory, err := s.repo.GetItemByCategoryId(model.ItemCategory{ID: item.ID})
 	if err != nil {
 		return dto.CategoryResponseDTO{}, err
 	}
@@ -56,6 +56,7 @@ func (s *InventoryService) GetItemByCategoryId(item dto.GetItemByCategoryDTO) (d
 		ID:          itemCategory.ID,
 		Name:        itemCategory.Name,
 		Description: itemCategory.Description,
+		Quantity:    itemCategory.Quantity,
 	}, nil
 }
 

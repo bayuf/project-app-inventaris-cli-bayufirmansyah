@@ -13,13 +13,16 @@ import (
 type InventoryIface interface {
 	// View
 	GetItemsCategory() ([]model.ItemCategory, error)
-	GetItemByCategoryId(model.Item) (model.ItemCategory, error)
+	GetItemByCategoryId(model.ItemCategory) (model.ItemCategory, error)
 
 	// Add
 	AddNewCategory(model.ItemCategory) error
 
 	// Update
 	UpdateCategory(model.ItemCategory) error
+
+	// Delete
+	DeleteCategoryById(model.ItemCategory) error
 }
 
 type Inventory struct {
@@ -55,14 +58,24 @@ func (i *Inventory) GetItemsCategory() ([]model.ItemCategory, error) {
 	return ItemsCategory, nil
 }
 
-func (i *Inventory) GetItemByCategoryId(item model.Item) (model.ItemCategory, error) {
+func (i *Inventory) GetItemByCategoryId(item model.ItemCategory) (model.ItemCategory, error) {
 	itemCategoryId := item.ID
 
-	query := `SELECT id, name, description FROM categories WHERE id=$1 AND deleted_at IS NULL`
+	// query := `SELECT id, name, description FROM categories WHERE id=$1 AND deleted_at IS NULL`
+	query := `SELECT 
+    c.id,
+    c.name,
+    c.description,
+    COUNT(i.id) AS total_items
+FROM categories c
+LEFT JOIN items i ON i.category_id = c.id AND i.deleted_at IS NULL
+WHERE c.id = $1
+  AND c.deleted_at IS NULL
+GROUP BY c.id, c.name, c.description;`
 	row := i.DB.QueryRow(context.Background(), query, itemCategoryId)
 
 	var ItemCategory model.ItemCategory
-	if err := row.Scan(&ItemCategory.ID, &ItemCategory.Name, &ItemCategory.Description); err != nil {
+	if err := row.Scan(&ItemCategory.ID, &ItemCategory.Name, &ItemCategory.Description, &ItemCategory.Quantity); err != nil {
 		return model.ItemCategory{}, errors.New("error: id not found or not valid")
 	}
 
@@ -98,7 +111,7 @@ func (i *Inventory) UpdateCategory(newData model.ItemCategory) error {
 
 	if newData.Description != "" {
 		query += fmt.Sprintf("description=$%d, ", counter)
-		args = append(args, newData.Name)
+		args = append(args, newData.Description)
 		counter++
 	}
 
@@ -118,5 +131,9 @@ func (i *Inventory) UpdateCategory(newData model.ItemCategory) error {
 		return err
 	}
 
+	return nil
+}
+
+func (i *Inventory) DeleteCategoryById(id model.ItemCategory) error {
 	return nil
 }
