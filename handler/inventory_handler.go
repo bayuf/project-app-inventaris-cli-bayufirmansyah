@@ -38,3 +38,11 @@ func (h *InventoryHandler) AddNewCategory(newCategoryData dto.CreateCategoryDTO)
 
 	return nil
 }
+
+func (h *InventoryHandler) UpdateCategory(newData dto.UpdateCategoryDTO) error {
+	if err := h.service.UpdateCategory(newData); err != nil {
+		return err
+	}
+
+	return nil
+}

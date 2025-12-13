@@ -11,6 +11,7 @@ type InventoryServiceIface interface {
 	GetItemByCategoryId(dto.GetItemByCategoryDTO) (dto.CategoryResponseDTO, error)
 
 	AddNewCategory(dto.CreateCategoryDTO) error
+	UpdateCategory(dto.UpdateCategoryDTO) error
 }
 
 type InventoryService struct {
@@ -62,5 +63,18 @@ func (s *InventoryService) AddNewCategory(newCategory dto.CreateCategoryDTO) err
 	if err := s.repo.AddNewCategory(model.ItemCategory{Name: newCategory.Name, Description: newCategory.Description}); err != nil {
 		return err
 	}
+	return nil
+}
+
+func (s *InventoryService) UpdateCategory(newData dto.UpdateCategoryDTO) error {
+
+	if err := s.repo.UpdateCategory(model.ItemCategory{
+		ID:          newData.ID,
+		Name:        *newData.Name,
+		Description: *newData.Description,
+	}); err != nil {
+		return err
+	}
+
 	return nil
 }

@@ -11,8 +11,8 @@ type CreateCategoryDTO struct {
 
 type UpdateCategoryDTO struct {
 	ID          int
-	Name        string
-	Description string
+	Name        *string
+	Description *string
 }
 
 type CategoryResponseDTO struct {

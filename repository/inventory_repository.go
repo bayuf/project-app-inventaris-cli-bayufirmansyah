@@ -3,6 +3,8 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
+	"strings"
 
 	"github.com/bayuf/project-app-inventaris-cli-bayufirmansyah/db"
 	"github.com/bayuf/project-app-inventaris-cli-bayufirmansyah/model"
@@ -15,6 +17,9 @@ type InventoryIface interface {
 
 	// Add
 	AddNewCategory(model.ItemCategory) error
+
+	// Update
+	UpdateCategory(model.ItemCategory) error
 }
 
 type Inventory struct {
@@ -74,6 +79,43 @@ func (i *Inventory) AddNewCategory(newCategory model.ItemCategory) error {
 
 	if cmdTag.RowsAffected() == 0 {
 		return errors.New("category already exist")
+	}
+
+	return nil
+}
+
+func (i *Inventory) UpdateCategory(newData model.ItemCategory) error {
+
+	query := "UPDATE categories SET "
+	args := []any{}
+	counter := 1
+
+	if newData.Name != "" {
+		query += fmt.Sprintf("name=$%d, ", counter)
+		args = append(args, newData.Name)
+		counter++
+	}
+
+	if newData.Description != "" {
+		query += fmt.Sprintf("description=$%d, ", counter)
+		args = append(args, newData.Name)
+		counter++
+	}
+
+	if newData.Name != "" || newData.Description != "" {
+		query += "updated_at=now()"
+	}
+	query = strings.TrimRight(query, ", ")
+	query += fmt.Sprintf(" WHERE id=$%d AND deleted_at IS NULL RETURNING id", counter)
+	args = append(args, newData.ID)
+
+	var UpdatedId int
+	if err := i.DB.QueryRow(context.Background(), query, args...).Scan(&UpdatedId); err != nil {
+		if UpdatedId == 0 {
+			return errors.New("update failed: duplicate name or category not found")
+		}
+
+		return err
 	}
 
 	return nil
