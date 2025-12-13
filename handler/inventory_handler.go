@@ -13,8 +13,8 @@ func NewInventoryHandler(service service.InventoryServiceIface) InventoryHandler
 	return InventoryHandler{service: service}
 }
 
-func (h *InventoryHandler) GetItemCategory() ([]dto.CategoryResponseDTO, error) {
-	return h.service.GetItemCategory()
+func (h *InventoryHandler) GetItemsCategory() ([]dto.CategoryResponseDTO, error) {
+	return h.service.GetItemsCategory()
 }
 
 func (h *InventoryHandler) GetItemByCategoryId(id int) (dto.CategoryResponseDTO, error) {

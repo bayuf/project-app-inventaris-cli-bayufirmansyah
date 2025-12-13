@@ -7,7 +7,7 @@ import (
 )
 
 type InventoryServiceIface interface {
-	GetItemCategory() ([]dto.CategoryResponseDTO, error)
+	GetItemsCategory() ([]dto.CategoryResponseDTO, error)
 	GetItemByCategoryId(dto.GetItemByCategoryDTO) (dto.CategoryResponseDTO, error)
 
 	AddNewCategory(dto.CreateCategoryDTO) error
@@ -24,7 +24,7 @@ func NewInventoryService(repo repository.InventoryIface) *InventoryService {
 	}
 }
 
-func (s *InventoryService) GetItemCategory() ([]dto.CategoryResponseDTO, error) {
+func (s *InventoryService) GetItemsCategory() ([]dto.CategoryResponseDTO, error) {
 	items, err := s.repo.GetItemsCategory()
 	if err != nil {
 		return nil, err

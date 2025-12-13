@@ -12,7 +12,7 @@ func Homepage(h handler.InventoryHandler) {
 	utils.ClearScreen()
 	for {
 		utils.ClearScreen()
-		fmt.Println("============ INVENTARIS KANTOR LUMOSHIVE ==============")
+		fmt.Println("=================== INVENTARIS KANTOR LUMOSHIVE =====================")
 		fmt.Println("1. Lihat List Kategori Barang")
 		fmt.Println("2. Lihat Detail Kategori Barang")
 		fmt.Println("3. Tambah Kategori Baru")
@@ -20,12 +20,13 @@ func Homepage(h handler.InventoryHandler) {
 		fmt.Println("5. Hapus Kategory")
 		fmt.Println("6. Keluar")
 		fmt.Print("Pilih Menu: ")
-		choice := 1
+		choice := 0
 		fmt.Scan(&choice)
 
 		switch choice {
 		case 1:
 			utils.ClearScreen()
+			GetItemsCategory(h)
 		case 2:
 			utils.ClearScreen()
 		case 3:
