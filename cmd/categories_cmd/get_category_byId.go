@@ -16,7 +16,7 @@ func GetItemsCategoryById(handl handler.InventoryHandler) {
 		fmt.Println("=================== INVENTARIS KANTOR LUMOSHIVE =====================")
 		fmt.Print("Masukkan Id dari categori barang: ")
 		fmt.Scan(&categoriId)
-		item, err := handl.GetItemByCategoryId(categoriId)
+		item, err := handl.GetItemCategoryById(categoriId)
 		if err != nil {
 			utils.ClearScreen()
 			fmt.Println(err)

@@ -37,4 +37,7 @@ type ItemResponseDTO struct {
 	Price      decimal.Decimal
 	BuyDate    time.Time
 	TotalUsage int
+
+	CategoryId int
+	SKU        string
 }

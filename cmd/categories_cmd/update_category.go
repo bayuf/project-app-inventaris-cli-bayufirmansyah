@@ -23,7 +23,7 @@ func UpdateCategory(handl handler.InventoryHandler) {
 		fmt.Scan(&categoryId)
 
 		utils.ClearScreen()
-		item, err := handl.GetItemByCategoryId(categoryId)
+		item, err := handl.GetItemCategoryById(categoryId)
 		if err != nil {
 			fmt.Println(err)
 			continue

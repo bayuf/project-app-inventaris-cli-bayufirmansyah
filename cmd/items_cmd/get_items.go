@@ -2,6 +2,7 @@ package itemscmd
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/bayuf/project-app-inventaris-cli-bayufirmansyah/handler"
@@ -39,4 +40,13 @@ func showItems(handl handler.InventoryHandler) {
 		return
 	}
 	utils.PrintTableItems(items)
+}
+
+func showAllCategory(handl handler.InventoryHandler) {
+	items, err := handl.GetItemsCategory()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	utils.PrintTableCategory(items)
 }

@@ -9,11 +9,13 @@ import (
 type InventoryServiceIface interface {
 	CheckCategory(id int) (bool, error)
 	GetItemsCategory() ([]dto.CategoryResponseDTO, error)
-	GetItemByCategoryId(dto.GetItemByCategoryDTO) (dto.CategoryResponseDTO, error)
+	GetItemCategoryById(dto.GetItemByCategoryDTO) (dto.CategoryResponseDTO, error)
 
 	AddNewCategory(dto.CreateCategoryDTO) error
 	UpdateCategory(dto.UpdateCategoryDTO) error
 	DeleteCategoryById(dto.UpdateCategoryDTO) error
+	AddNewItem(dto.CreateItemDTO) error
+	GetItemsByCategoryId(dto.GetItemDTO) ([]dto.ItemResponseDTO, error)
 
 	// Item
 	GetItems() ([]dto.ItemResponseDTO, error)
@@ -61,9 +63,9 @@ func (s *InventoryService) GetItemsCategory() ([]dto.CategoryResponseDTO, error)
 	return itemsCategory, nil
 }
 
-func (s *InventoryService) GetItemByCategoryId(item dto.GetItemByCategoryDTO) (dto.CategoryResponseDTO, error) {
+func (s *InventoryService) GetItemCategoryById(item dto.GetItemByCategoryDTO) (dto.CategoryResponseDTO, error) {
 
-	itemCategory, err := s.repo.GetItemByCategoryId(model.ItemCategory{ID: item.ID})
+	itemCategory, err := s.repo.GetItemCategoryById(model.ItemCategory{ID: item.ID})
 	if err != nil {
 		return dto.CategoryResponseDTO{}, err
 	}
@@ -126,7 +128,28 @@ func (s *InventoryService) GetItems() ([]dto.ItemResponseDTO, error) {
 	return itemsResponse, nil
 }
 
+func (s *InventoryService) GetItemsByCategoryId(id dto.GetItemDTO) ([]dto.ItemResponseDTO, error) {
+	items, err := s.repo.GetItemsByCategoryId(model.Item{CategoryId: id.ItemID})
+	if err != nil {
+		return nil, err
+	}
+
+	itemResponse := []dto.ItemResponseDTO{}
+	for _, v := range items {
+		item := dto.ItemResponseDTO{
+			CategoryId: v.CategoryId,
+			Name:       v.Name,
+			SKU:        v.SKU,
+		}
+		itemResponse = append(itemResponse, item)
+	}
+
+	return itemResponse, nil
+
+}
+
 func (s *InventoryService) AddNewItem(newItem dto.CreateItemDTO) error {
+
 	s.repo.AddNewItem(model.Item{
 		CategoryId: newItem.CategoryId,
 		Name:       newItem.Name,

@@ -13,8 +13,9 @@ import (
 type InventoryIface interface {
 	// View
 	GetItemsCategory() ([]model.ItemCategory, error)
-	GetItemByCategoryId(model.ItemCategory) (model.ItemCategory, error)
+	GetItemCategoryById(model.ItemCategory) (model.ItemCategory, error)
 	GetItems() ([]model.Item, error)
+	GetItemsByCategoryId(model.Item) ([]model.Item, error)
 	CheckCategory(model.ItemCategory) (bool, error)
 
 	// Add
@@ -71,7 +72,7 @@ func (i *Inventory) GetItemsCategory() ([]model.ItemCategory, error) {
 	return ItemsCategory, nil
 }
 
-func (i *Inventory) GetItemByCategoryId(item model.ItemCategory) (model.ItemCategory, error) {
+func (i *Inventory) GetItemCategoryById(item model.ItemCategory) (model.ItemCategory, error) {
 	itemCategoryId := item.ID
 
 	// query := `SELECT id, name, description FROM categories WHERE id=$1 AND deleted_at IS NULL`
@@ -188,12 +189,35 @@ WHERE i.deleted_at IS NULL`
 	return items, nil
 }
 
-func (i *Inventory) AddNewItem(newItem model.Item) error {
-	query := `INSERT INTO `
+func (i *Inventory) GetItemsByCategoryId(item model.Item) ([]model.Item, error) {
+	query := `SELECT category_id, name, sku FROM items WHERE category_id=$1 AND deleted_at IS NULL`
+	rows, err := i.DB.Query(context.Background(), query, item.CategoryId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
 
-	_, err := i.DB.Exec(context.Background(), query)
+	var items []model.Item
+	for rows.Next() {
+		item := model.Item{}
+		rows.Scan(&item.CategoryId, &item.Name, &item.SKU)
+
+		items = append(items, item)
+	}
+
+	return items, nil
+}
+
+func (i *Inventory) AddNewItem(newItem model.Item) error {
+	query := `INSERT INTO items (category_id, name, sku, purchase_price, purchase_date, useful_life_days, note, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) ON CONFLICT (sku) DO NOTHING;`
+
+	cmdTag, err := i.DB.Exec(context.Background(), query, newItem.CategoryId, newItem.Name, newItem.SKU, newItem.Price, newItem.BuyDate, newItem.LifeDays, newItem.Note)
 	if err != nil {
 		return err
+	}
+
+	if cmdTag.RowsAffected() == 0 {
+		return errors.New("item (SKU) already exists")
 	}
 	return nil
 }

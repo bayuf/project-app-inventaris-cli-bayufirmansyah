@@ -12,8 +12,10 @@ func ItemManagement(handl handler.InventoryHandler) {
 	for {
 		fmt.Println("=================== INVENTARIS KANTOR LUMOSHIVE =====================")
 		fmt.Println("1. Lihat List Kategori Barang")
-		fmt.Println("2. Item Manajemen")
-		fmt.Println("3. Keluar")
+		fmt.Println("2. Tambah Item Baru")
+		fmt.Println("3. Edit Item")
+		fmt.Println("4. Hapus Item")
+		fmt.Println("5. Keluar")
 		fmt.Print("Pilih Menu: ")
 		choice := 0
 		fmt.Scan(&choice)
@@ -22,6 +24,9 @@ func ItemManagement(handl handler.InventoryHandler) {
 		case 1:
 			utils.ClearScreen()
 			GetItems(handl)
+		case 2:
+			utils.ClearScreen()
+			AddItem(handl)
 		case 3:
 			utils.ClearScreen()
 			fmt.Println("Keluar dari aplikasi ....")

@@ -14,12 +14,21 @@ func NewInventoryHandler(service service.InventoryServiceIface) InventoryHandler
 }
 
 // Category Function
+func (h *InventoryHandler) CheckCategory(id int) (bool, error) {
+	exist, err := h.service.CheckCategory(id)
+	if err != nil {
+		return false, err
+	}
+
+	return exist, nil
+}
+
 func (h *InventoryHandler) GetItemsCategory() ([]dto.CategoryResponseDTO, error) {
 	return h.service.GetItemsCategory()
 }
 
-func (h *InventoryHandler) GetItemByCategoryId(id int) (dto.CategoryResponseDTO, error) {
-	item, err := h.service.GetItemByCategoryId(dto.GetItemByCategoryDTO{ID: id})
+func (h *InventoryHandler) GetItemCategoryById(id int) (dto.CategoryResponseDTO, error) {
+	item, err := h.service.GetItemCategoryById(dto.GetItemByCategoryDTO{ID: id})
 	if err != nil {
 		return dto.CategoryResponseDTO{}, err
 	}
@@ -64,4 +73,29 @@ func (h *InventoryHandler) GetItems() ([]dto.ItemResponseDTO, error) {
 	}
 
 	return items, nil
+}
+
+func (h *InventoryHandler) GetItemsByCategoryId(id int) ([]dto.ItemResponseDTO, error) {
+	items, err := h.service.GetItemsByCategoryId(dto.GetItemDTO{ItemID: id})
+	if err != nil {
+		return nil, err
+	}
+
+	return items, nil
+}
+
+func (h *InventoryHandler) AddNewItem(data dto.CreateItemDTO) error {
+	if err := h.service.AddNewItem(dto.CreateItemDTO{
+		CategoryId: data.CategoryId,
+		Name:       data.Name,
+		SKU:        data.SKU,
+		Price:      data.Price,
+		BuyDate:    data.BuyDate,
+		LifeDays:   data.LifeDays,
+		Note:       data.Note,
+	}); err != nil {
+		return err
+	}
+
+	return nil
 }
