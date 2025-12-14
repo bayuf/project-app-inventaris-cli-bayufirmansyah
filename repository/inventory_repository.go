@@ -139,7 +139,7 @@ func (i *Inventory) UpdateCategory(newData model.ItemCategory) error {
 	counter := 1
 
 	if newData.Name != "" {
-		query += fmt.Sprintf("name=$%d, ", counter)
+		query += fmt.Sprintf("name=$%d, ", counter) //$1
 		args = append(args, newData.Name)
 		counter++
 	}
