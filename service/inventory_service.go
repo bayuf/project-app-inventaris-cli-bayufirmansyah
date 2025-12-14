@@ -7,6 +7,7 @@ import (
 )
 
 type InventoryServiceIface interface {
+	CheckCategory(id int) (bool, error)
 	GetItemsCategory() ([]dto.CategoryResponseDTO, error)
 	GetItemByCategoryId(dto.GetItemByCategoryDTO) (dto.CategoryResponseDTO, error)
 
@@ -29,6 +30,16 @@ func NewInventoryService(repo repository.InventoryIface) *InventoryService {
 }
 
 // Categories Function
+func (s *InventoryService) CheckCategory(id int) (bool, error) {
+
+	exist, err := s.repo.CheckCategory(model.ItemCategory{ID: id})
+	if err != nil {
+		return exist, err
+	}
+
+	return exist, nil
+}
+
 func (s *InventoryService) GetItemsCategory() ([]dto.CategoryResponseDTO, error) {
 	items, err := s.repo.GetItemsCategory()
 	if err != nil {
@@ -103,13 +114,27 @@ func (s *InventoryService) GetItems() ([]dto.ItemResponseDTO, error) {
 	itemsResponse := []dto.ItemResponseDTO{}
 	for _, v := range items {
 		item := dto.ItemResponseDTO{
-			ID:        v.ID,
-			Name:      v.Name,
-			Price:     v.Price,
-			BuyDate:   v.BuyDate,
-			TotalUsed: v.TotalUsed,
+			ID:         v.ID,
+			Category:   v.Category,
+			Name:       v.Name,
+			Price:      v.Price,
+			BuyDate:    v.BuyDate,
+			TotalUsage: v.TotalUsage,
 		}
 		itemsResponse = append(itemsResponse, item)
 	}
 	return itemsResponse, nil
+}
+
+func (s *InventoryService) AddNewItem(newItem dto.CreateItemDTO) error {
+	s.repo.AddNewItem(model.Item{
+		CategoryId: newItem.CategoryId,
+		Name:       newItem.Name,
+		SKU:        newItem.SKU,
+		Price:      newItem.Price,
+		BuyDate:    newItem.BuyDate,
+		LifeDays:   newItem.LifeDays,
+		Note:       newItem.Note,
+	})
+	return nil
 }

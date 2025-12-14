@@ -1,24 +1,18 @@
-package cmd
+package itemscmd
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/bayuf/project-app-inventaris-cli-bayufirmansyah/handler"
 	"github.com/bayuf/project-app-inventaris-cli-bayufirmansyah/utils"
 )
 
-func GetItemsCategory(handl handler.InventoryHandler) {
-	items, err := handl.GetItemsCategory()
-	if err != nil {
-		log.Fatal(err)
-	}
-
+func GetItems(handl handler.InventoryHandler) {
 	for {
 		fmt.Println("=================== INVENTARIS KANTOR LUMOSHIVE =====================")
-		utils.PrintTableCategory(items)
-		fmt.Println("1. Kembali ke Homepage")
+		showItems(handl)
+		fmt.Println("1. Kembali ke Item Manajemen")
 		fmt.Println("2. Keluar Aplikasi")
 		fmt.Print("Pilih Menu: ")
 		choice := 0
@@ -35,16 +29,14 @@ func GetItemsCategory(handl handler.InventoryHandler) {
 			utils.ClearScreen()
 			fmt.Println("Invalid Input")
 		}
-
 	}
-
 }
 
-func showAllCategories(handl handler.InventoryHandler) {
-	items, err := handl.GetItemsCategory()
+func showItems(handl handler.InventoryHandler) {
+	items, err := handl.GetItems()
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		return
 	}
-
-	utils.PrintTableCategory(items)
+	utils.PrintTableItems(items)
 }

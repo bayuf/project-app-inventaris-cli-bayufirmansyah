@@ -44,3 +44,24 @@ func PrintTableCategoryById(itemsCategory []dto.CategoryResponseDTO) {
 	}
 	table.Render()
 }
+
+func PrintTableItems(items []dto.ItemResponseDTO) {
+	table := tablewriter.NewWriter(os.Stdout)
+
+	table.Header([]string{"No", "ID", "Kategori", "Nama", "Harga", "Tanggal Beli", "Umur Penggunaan"})
+
+	for i, t := range items {
+		row := []string{
+			fmt.Sprintf("%d", i+1),
+			fmt.Sprintf("%d", t.ID),
+			t.Category,
+			t.Name,
+			fmt.Sprintf("Rp. %v", t.Price),
+			GetDateFormat(t.BuyDate),
+			fmt.Sprintf("%d Hari", t.TotalUsage),
+		}
+
+		table.Append(row)
+	}
+	table.Render()
+}

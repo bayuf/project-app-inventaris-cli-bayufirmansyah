@@ -15,9 +15,11 @@ type InventoryIface interface {
 	GetItemsCategory() ([]model.ItemCategory, error)
 	GetItemByCategoryId(model.ItemCategory) (model.ItemCategory, error)
 	GetItems() ([]model.Item, error)
+	CheckCategory(model.ItemCategory) (bool, error)
 
 	// Add
 	AddNewCategory(model.ItemCategory) error
+	AddNewItem(model.Item) error
 
 	// Update
 	UpdateCategory(model.ItemCategory) error
@@ -37,6 +39,14 @@ func NewInventoryRepository(db db.PgxIface) *Inventory {
 }
 
 // Categories Function
+func (i *Inventory) CheckCategory(data model.ItemCategory) (bool, error) {
+	query := `SELECT EXISTS (SELECT 1 FROM categories WHERE id = $1 AND deleted_at IS NULL);`
+	var exist bool
+	if err := i.DB.QueryRow(context.Background(), query, data.ID).Scan(&exist); err != nil {
+		return false, err
+	}
+	return exist, nil
+}
 
 func (i *Inventory) GetItemsCategory() ([]model.ItemCategory, error) {
 
@@ -155,8 +165,10 @@ func (i *Inventory) DeleteCategoryById(item model.ItemCategory) error {
 
 // Items Function
 func (i *Inventory) GetItems() ([]model.Item, error) {
-	query := `SELECT id, name, purchase_price, purchase_date, useful_life_days
-	FROM items WHERE deleted_at IS NULL`
+	query := `SELECT i.id, c.name, i.name, i.purchase_price, i.purchase_date, (CURRENT_DATE - i.purchase_date) AS total_usage_days
+FROM items i
+LEFT JOIN categories c ON i.category_id = c.id AND c.deleted_at IS NULL
+WHERE i.deleted_at IS NULL`
 
 	rows, err := i.DB.Query(context.Background(), query)
 	if err != nil {
@@ -168,10 +180,20 @@ func (i *Inventory) GetItems() ([]model.Item, error) {
 	for rows.Next() {
 		item := model.Item{}
 
-		rows.Scan(&item.ID, &item.Name, &item.Price, &item.BuyDate, &item.TotalUsed)
+		rows.Scan(&item.ID, &item.Category, &item.Name, &item.Price, &item.BuyDate, &item.TotalUsage)
 
 		items = append(items, item)
 	}
 
 	return items, nil
+}
+
+func (i *Inventory) AddNewItem(newItem model.Item) error {
+	query := `INSERT INTO `
+
+	_, err := i.DB.Exec(context.Background(), query)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -7,8 +7,17 @@ import (
 )
 
 type CreateItemDTO struct {
+	ID         int
+	Category   string
 	Name       string
-	CategoryID int
+	Price      decimal.Decimal
+	BuyDate    time.Time
+	TotalUsage int
+
+	CategoryId int
+	SKU        string
+	LifeDays   int
+	Note       string
 }
 
 type UpdateItemDTO struct {
@@ -18,14 +27,14 @@ type UpdateItemDTO struct {
 }
 
 type GetItemDTO struct {
-	CategoryID int
-	ItemID     int
+	ItemID int
 }
 
 type ItemResponseDTO struct {
-	ID        int
-	Name      string
-	Price     decimal.Decimal
-	BuyDate   time.Time
-	TotalUsed int
+	ID         int
+	Category   string
+	Name       string
+	Price      decimal.Decimal
+	BuyDate    time.Time
+	TotalUsage int
 }

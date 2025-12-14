@@ -1,43 +1,38 @@
-package cmd
+package categoriescmd
 
 import (
-	"bufio"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/bayuf/project-app-inventaris-cli-bayufirmansyah/dto"
 	"github.com/bayuf/project-app-inventaris-cli-bayufirmansyah/handler"
 	"github.com/bayuf/project-app-inventaris-cli-bayufirmansyah/utils"
 )
 
-func AddNewCategory(handl handler.InventoryHandler) {
-	reader := bufio.NewReader(os.Stdin)
+func GetItemsCategoryById(handl handler.InventoryHandler) {
+	categoriId := 0
 	for {
+
 		fmt.Println("=================== INVENTARIS KANTOR LUMOSHIVE =====================")
-		reader.ReadString('\n')
-
-		fmt.Println("Massukkan Data Kategory Baru")
-		fmt.Print("Nama Kategori: ")
-		name, _ := reader.ReadString('\n')
-		name = strings.TrimSpace(name)
-
-		fmt.Print("Deskripsi [opsional]: ")
-		description, _ := reader.ReadString('\n')
-		description = strings.TrimSpace(description)
-
-		if err := handl.AddNewCategory(dto.CreateCategoryDTO{
-			Name:        name,
-			Description: description,
-		}); err != nil {
+		fmt.Print("Masukkan Id dari categori barang: ")
+		fmt.Scan(&categoriId)
+		item, err := handl.GetItemByCategoryId(categoriId)
+		if err != nil {
 			utils.ClearScreen()
 			fmt.Println(err)
 			continue
-		} else {
-			fmt.Printf("Category: %s added successfully\n", name)
 		}
 
-		fmt.Println("1. Tambah Category Baru Lagi")
+		utils.PrintTableCategoryById([]dto.CategoryResponseDTO{
+			{
+				ID:          item.ID,
+				Name:        item.Name,
+				Description: item.Description,
+				Quantity:    item.Quantity,
+			},
+		})
+
+		fmt.Println("1. Lihat Category yang lain")
 		fmt.Println("2. Kembali ke Homepage")
 		fmt.Println("3. Keluar Aplikasi")
 		fmt.Print("Pilih Menu: ")
@@ -58,6 +53,6 @@ func AddNewCategory(handl handler.InventoryHandler) {
 			utils.ClearScreen()
 			fmt.Println("Invalid Input")
 		}
-
 	}
+
 }
