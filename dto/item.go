@@ -43,4 +43,10 @@ type ItemResponseDTO struct {
 	SKU        string
 	Status     string
 	Note       string
+	LifeDays   int
+
+	TotalInvestment   decimal.Decimal
+	CurrentValue      decimal.Decimal
+	DepreciationValue decimal.Decimal
+	AgeItem           float64
 }

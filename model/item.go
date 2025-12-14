@@ -26,4 +26,9 @@ type Item struct {
 	LifeDays   int
 	Note       string
 	Status     string
+
+	TotalInvestment   decimal.Decimal
+	CurrentValue      decimal.Decimal
+	DepreciationValue decimal.Decimal
+	AgeItem           float64
 }

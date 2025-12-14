@@ -16,8 +16,9 @@ func GetItems(handl handler.InventoryHandler) {
 		fmt.Println("=================== INVENTARIS KANTOR LUMOSHIVE =====================")
 		showItems(handl)
 		fmt.Println("1. Lihat Detail Barang")
-		fmt.Println("2. Kembali ke Item Manajemen")
-		fmt.Println("3. Keluar Aplikasi")
+		fmt.Println("2. Lihat barang yang butuh diganti (100 hari)")
+		fmt.Println("3. Kembali ke Item Manajemen")
+		fmt.Println("4. Keluar Aplikasi")
 		fmt.Print("Pilih Menu: ")
 		choice := 0
 		fmt.Scan(&choice)
@@ -52,8 +53,24 @@ func GetItems(handl handler.InventoryHandler) {
 			utils.ClearScreen()
 		case 2:
 			utils.ClearScreen()
-			return
+			items, err := handl.GetItemNeedReplacement()
+			if err != nil {
+				fmt.Println(err)
+				utils.ClearScreen()
+				return
+			}
+			utils.ClearScreen()
+			utils.PrintTableItemNeedReplace(items)
+			reader := bufio.NewReader(os.Stdin)
+			fmt.Print("Tekan Enter untuk Kembali .....")
+			reader.ReadString('\n')
+			reader.ReadString('\n')
+			utils.ClearScreen()
+
 		case 3:
+			utils.ClearScreen()
+			return
+		case 4:
 			fmt.Println("keluar aplikasi ....")
 			os.Exit(0)
 		default:

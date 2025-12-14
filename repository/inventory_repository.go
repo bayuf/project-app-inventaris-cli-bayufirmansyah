@@ -8,6 +8,7 @@ import (
 
 	"github.com/bayuf/project-app-inventaris-cli-bayufirmansyah/db"
 	"github.com/bayuf/project-app-inventaris-cli-bayufirmansyah/model"
+	"github.com/shopspring/decimal"
 )
 
 type InventoryIface interface {
@@ -18,6 +19,9 @@ type InventoryIface interface {
 	GetItemsByCategoryId(model.Item) ([]model.Item, error)
 	GetItemById(model.Item) (model.Item, error)
 	CheckCategory(model.ItemCategory) (bool, error)
+	GetItemNeedReplacement() ([]model.Item, error)
+	GetTotalInvestmentValue() (model.Item, error)
+	GetItemDepreciationById(model.Item) (model.Item, error)
 
 	// Add
 	AddNewCategory(model.ItemCategory) error
@@ -296,4 +300,95 @@ func (i *Inventory) UpdateItem(newData model.Item) error {
 	}
 
 	return nil
+}
+
+func (i *Inventory) GetItemNeedReplacement() ([]model.Item, error) {
+	query := `SELECT
+    i.id,
+    i.name,
+    i.sku,
+    i.purchase_date,
+    (CURRENT_DATE - i.purchase_date) AS usage_days
+FROM items i
+WHERE i.deleted_at IS NULL
+  AND (CURRENT_DATE - i.purchase_date) > 100
+ORDER BY usage_days DESC;
+`
+	rows, err := i.DB.Query(context.Background(), query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var items []model.Item
+	for rows.Next() {
+		item := model.Item{}
+		rows.Scan(&item.ID, &item.Name, &item.SKU, &item.BuyDate, &item.LifeDays)
+
+		items = append(items, item)
+	}
+
+	return items, nil
+}
+
+func (i *Inventory) GetTotalInvestmentValue() (model.Item, error) {
+	query := `SELECT
+    SUM(
+        i.purchase_price *
+        POWER(
+            1 - i.depreciation_rate,
+            (CURRENT_DATE - i.purchase_date) / 365.0
+        )
+    ) AS total_current_value
+FROM items i
+WHERE i.deleted_at IS NULL;`
+
+	row := i.DB.QueryRow(context.Background(), query)
+
+	var totalInvest decimal.Decimal
+	err := row.Scan(&totalInvest)
+	if err != nil {
+		return model.Item{}, err
+	}
+
+	return model.Item{TotalInvestment: totalInvest}, nil
+}
+
+func (i *Inventory) GetItemDepreciationById(item model.Item) (model.Item, error) {
+	query := `SELECT
+    i.id,
+    i.name,
+
+    i.purchase_price AS original_value,
+
+    (CURRENT_DATE - i.purchase_date) AS usage_days,
+    (CURRENT_DATE - i.purchase_date) / 365.0 AS age_years,
+
+    i.purchase_price *
+    POWER(
+        1 - i.depreciation_rate,
+        (CURRENT_DATE - i.purchase_date) / 365.0
+    ) AS current_value,
+
+    i.purchase_price -
+    (
+        i.purchase_price *
+        POWER(
+            1 - i.depreciation_rate,
+            (CURRENT_DATE - i.purchase_date) / 365.0
+        )
+    ) AS accumulated_depreciation
+
+FROM items i
+WHERE i.id = $1
+  AND i.deleted_at IS NULL;`
+
+	row := i.DB.QueryRow(context.Background(), query, item.ID)
+	itemResponse := model.Item{}
+	if err := row.Scan(&itemResponse.ID, &itemResponse.Name, &itemResponse.Price, &itemResponse.TotalUsage, &itemResponse.AgeItem, &itemResponse.CurrentValue, &itemResponse.DepreciationValue); err != nil {
+		return model.Item{}, nil
+	}
+
+	return itemResponse, nil
+
 }

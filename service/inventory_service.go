@@ -7,7 +7,7 @@ import (
 )
 
 type InventoryServiceIface interface {
-	CheckCategory(id int) (bool, error)
+	CheckCategory(int) (bool, error)
 	GetItemsCategory() ([]dto.CategoryResponseDTO, error)
 	GetItemCategoryById(dto.GetItemByCategoryDTO) (dto.CategoryResponseDTO, error)
 
@@ -21,7 +21,11 @@ type InventoryServiceIface interface {
 	AddNewItem(dto.CreateItemDTO) error
 	GetItemsByCategoryId(dto.GetItemDTO) ([]dto.ItemResponseDTO, error)
 	GetItemById(dto.GetItemDTO) (dto.ItemResponseDTO, error)
-	UpdateItem(newData dto.UpdateItemDTO) error
+	UpdateItem(dto.UpdateItemDTO) error
+
+	GetItemNeedReplacement() ([]dto.ItemResponseDTO, error)
+	GetTotalInvestmentValue() (dto.ItemResponseDTO, error)
+	GetItemDepreciationById(dto.GetItemDTO) (dto.ItemResponseDTO, error)
 }
 
 type InventoryService struct {
@@ -202,4 +206,54 @@ func (s *InventoryService) UpdateItem(newData dto.UpdateItemDTO) error {
 	}
 
 	return nil
+}
+
+func (s *InventoryService) GetItemNeedReplacement() ([]dto.ItemResponseDTO, error) {
+	items, err := s.repo.GetItemNeedReplacement()
+	if err != nil {
+		return nil, err
+	}
+
+	itemResponse := []dto.ItemResponseDTO{}
+	for _, v := range items {
+		item := dto.ItemResponseDTO{
+			ID:       v.ID,
+			Name:     v.Name,
+			SKU:      v.SKU,
+			BuyDate:  v.BuyDate,
+			LifeDays: v.LifeDays,
+		}
+
+		itemResponse = append(itemResponse, item)
+	}
+
+	return itemResponse, nil
+}
+
+func (s *InventoryService) GetTotalInvestmentValue() (dto.ItemResponseDTO, error) {
+
+	total, err := s.repo.GetTotalInvestmentValue()
+	if err != nil {
+		return dto.ItemResponseDTO{}, err
+	}
+
+	return dto.ItemResponseDTO{TotalInvestment: total.TotalInvestment}, nil
+}
+
+func (s *InventoryService) GetItemDepreciationById(data dto.GetItemDTO) (dto.ItemResponseDTO, error) {
+
+	item, err := s.repo.GetItemDepreciationById(model.Item{ID: data.ItemID})
+	if err != nil {
+		return dto.ItemResponseDTO{}, err
+	}
+
+	return dto.ItemResponseDTO{
+		ID:                item.ID,
+		Name:              item.Name,
+		Price:             item.Price,
+		TotalUsage:        item.TotalUsage,
+		AgeItem:           item.AgeItem,
+		CurrentValue:      item.CurrentValue,
+		DepreciationValue: item.DepreciationValue,
+	}, nil
 }

@@ -15,7 +15,9 @@ func ItemManagement(handl handler.InventoryHandler) {
 		fmt.Println("2. Tambah Item Baru")
 		fmt.Println("3. Edit Item")
 		fmt.Println("4. Hapus Item")
-		fmt.Println("5. Keluar")
+		fmt.Println("5. Total Investment")
+		fmt.Println("6. Harga Depreciation")
+		fmt.Println("7. Keluar")
 		fmt.Print("Pilih Menu: ")
 		choice := 0
 		fmt.Scan(&choice)
@@ -34,6 +36,12 @@ func ItemManagement(handl handler.InventoryHandler) {
 			utils.ClearScreen()
 			DeleteItem(handl)
 		case 5:
+			utils.ClearScreen()
+			GetTotalInvestmentValue(handl)
+		case 6:
+			utils.ClearScreen()
+			GetDepreciationById(handl)
+		case 7:
 			utils.ClearScreen()
 			fmt.Println("Keluar dari aplikasi ....")
 			os.Exit(0)

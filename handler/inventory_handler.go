@@ -122,3 +122,23 @@ func (h *InventoryHandler) UpdateItem(newData dto.UpdateItemDTO) error {
 
 	return nil
 }
+
+func (h *InventoryHandler) GetItemNeedReplacement() ([]dto.ItemResponseDTO, error) {
+
+	return h.service.GetItemNeedReplacement()
+}
+
+func (h *InventoryHandler) GetTotalInvestmentValue() (dto.ItemResponseDTO, error) {
+
+	return h.service.GetTotalInvestmentValue()
+}
+
+func (h *InventoryHandler) GetItemDepreciationById(id dto.GetItemDTO) (dto.ItemResponseDTO, error) {
+
+	item, err := h.service.GetItemDepreciationById(id)
+	if err != nil {
+		return dto.ItemResponseDTO{}, err
+	}
+
+	return item, err
+}

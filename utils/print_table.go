@@ -48,7 +48,7 @@ func PrintTableCategoryById(itemsCategory []dto.CategoryResponseDTO) {
 func PrintTableItems(items []dto.ItemResponseDTO) {
 	table := tablewriter.NewWriter(os.Stdout)
 
-	table.Header([]string{"No", "ID", "Kategori", "Nama", "Harga", "Tanggal Beli", "Umur Penggunaan"})
+	table.Header([]string{"No", "ID", "Kategori", "Nama", "Harga", "Tanggal Beli", "Waktu Penggunaan"})
 
 	for i, t := range items {
 		row := []string{
@@ -81,6 +81,48 @@ func PrintTableItem(items []dto.ItemResponseDTO) {
 			GetDateFormat(t.BuyDate),
 			t.Status,
 			t.Note,
+		}
+
+		table.Append(row)
+	}
+	table.Render()
+}
+
+func PrintTableItemNeedReplace(items []dto.ItemResponseDTO) {
+	table := tablewriter.NewWriter(os.Stdout)
+
+	table.Header([]string{"No", "ID", "Nama", "SKU", "Tanggal Beli", "Waktu Penggunaan"})
+
+	for i, t := range items {
+		row := []string{
+			fmt.Sprintf("%d", i+1),
+			fmt.Sprintf("%d", t.ID),
+			t.Name,
+			t.SKU,
+			GetDateFormat(t.BuyDate),
+			fmt.Sprintf("%d Hari", t.LifeDays),
+		}
+
+		table.Append(row)
+	}
+	table.Render()
+}
+
+func PrintTableItemDepreciation(items []dto.ItemResponseDTO) {
+	table := tablewriter.NewWriter(os.Stdout)
+
+	table.Header([]string{"No", "ID", "Nama", "Harga Asli", "Total Penggunaan", "Umur Barang", "Nilai Sekarang", "Nilai Depreciation"})
+
+	for i, t := range items {
+		row := []string{
+			fmt.Sprintf("%d", i+1),
+			fmt.Sprintf("%d", t.ID),
+			t.Name,
+			FormatRupiah(t.Price),
+			fmt.Sprintf("%d Hari", t.TotalUsage),
+			YearFormat(t.AgeItem),
+			FormatRupiah(t.CurrentValue),
+			FormatRupiah(t.DepreciationValue),
 		}
 
 		table.Append(row)
