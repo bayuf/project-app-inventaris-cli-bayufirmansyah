@@ -29,6 +29,11 @@ func ItemManagement(handl handler.InventoryHandler) {
 			AddItem(handl)
 		case 3:
 			utils.ClearScreen()
+		case 4:
+			utils.ClearScreen()
+			DeleteItem(handl)
+		case 5:
+			utils.ClearScreen()
 			fmt.Println("Keluar dari aplikasi ....")
 			os.Exit(0)
 		default:

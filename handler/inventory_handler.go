@@ -99,3 +99,10 @@ func (h *InventoryHandler) AddNewItem(data dto.CreateItemDTO) error {
 
 	return nil
 }
+
+func (h *InventoryHandler) DeleteItemById(id int) error {
+	if err := h.service.DeleteItemById(dto.UpdateItemDTO{ID: id}); err != nil {
+		return err
+	}
+	return nil
+}

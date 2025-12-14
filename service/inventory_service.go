@@ -19,6 +19,7 @@ type InventoryServiceIface interface {
 
 	// Item
 	GetItems() ([]dto.ItemResponseDTO, error)
+	DeleteItemById(dto.UpdateItemDTO) error
 }
 
 type InventoryService struct {
@@ -159,5 +160,13 @@ func (s *InventoryService) AddNewItem(newItem dto.CreateItemDTO) error {
 		LifeDays:   newItem.LifeDays,
 		Note:       newItem.Note,
 	})
+	return nil
+}
+
+func (s *InventoryService) DeleteItemById(item dto.UpdateItemDTO) error {
+	if err := s.repo.DeleteItemById(model.Item{ID: item.ID}); err != nil {
+		return err
+	}
+
 	return nil
 }

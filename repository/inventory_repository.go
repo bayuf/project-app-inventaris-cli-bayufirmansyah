@@ -27,6 +27,7 @@ type InventoryIface interface {
 
 	// Delete
 	DeleteCategoryById(model.ItemCategory) error
+	DeleteItemById(model.Item) error
 }
 
 type Inventory struct {
@@ -219,5 +220,21 @@ func (i *Inventory) AddNewItem(newItem model.Item) error {
 	if cmdTag.RowsAffected() == 0 {
 		return errors.New("item (SKU) already exists")
 	}
+	return nil
+}
+
+func (i *Inventory) DeleteItemById(item model.Item) error {
+	id := item.ID
+	query := `UPDATE items SET deleted_at=NOW(), updated_at=NOW() WHERE id=$1 AND deleted_at IS NULL RETURNING id`
+
+	var deletedId int
+	if err := i.DB.QueryRow(context.Background(), query, id).Scan(&deletedId); err != nil {
+		if deletedId == 0 {
+			return errors.New("id not found or not valid")
+		}
+
+		return err
+	}
+
 	return nil
 }
