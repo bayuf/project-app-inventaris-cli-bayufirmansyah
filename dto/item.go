@@ -21,9 +21,10 @@ type CreateItemDTO struct {
 }
 
 type UpdateItemDTO struct {
-	ID         int
-	Name       *string
-	CategoryID *int
+	ID     int
+	Name   string
+	Note   string
+	Status string
 }
 
 type GetItemDTO struct {
@@ -40,4 +41,6 @@ type ItemResponseDTO struct {
 
 	CategoryId int
 	SKU        string
+	Status     string
+	Note       string
 }

@@ -16,6 +16,7 @@ type InventoryIface interface {
 	GetItemCategoryById(model.ItemCategory) (model.ItemCategory, error)
 	GetItems() ([]model.Item, error)
 	GetItemsByCategoryId(model.Item) ([]model.Item, error)
+	GetItemById(model.Item) (model.Item, error)
 	CheckCategory(model.ItemCategory) (bool, error)
 
 	// Add
@@ -24,6 +25,7 @@ type InventoryIface interface {
 
 	// Update
 	UpdateCategory(model.ItemCategory) error
+	UpdateItem(newData model.Item) error
 
 	// Delete
 	DeleteCategoryById(model.ItemCategory) error
@@ -95,6 +97,20 @@ GROUP BY c.id, c.name, c.description;`
 	}
 
 	return ItemCategory, nil
+}
+
+func (i *Inventory) GetItemById(data model.Item) (model.Item, error) {
+	// query := `SELECT id, name, description FROM categories WHERE id=$1 AND deleted_at IS NULL`
+	query := `SELECT id, name, sku, purchase_price, purchase_date, current_status, note
+	FROM items WHERE id=$1 AND deleted_at IS NULL`
+	row := i.DB.QueryRow(context.Background(), query, data.ID)
+
+	var item model.Item
+	if err := row.Scan(&item.ID, &item.Name, &item.SKU, &item.Price, &item.BuyDate, &item.Status, &item.Note); err != nil {
+		return model.Item{}, errors.New("error: id not found or not valid")
+	}
+
+	return item, nil
 }
 
 func (i *Inventory) AddNewCategory(newCategory model.ItemCategory) error {
@@ -231,6 +247,49 @@ func (i *Inventory) DeleteItemById(item model.Item) error {
 	if err := i.DB.QueryRow(context.Background(), query, id).Scan(&deletedId); err != nil {
 		if deletedId == 0 {
 			return errors.New("id not found or not valid")
+		}
+
+		return err
+	}
+
+	return nil
+}
+
+func (i *Inventory) UpdateItem(newData model.Item) error {
+
+	query := "UPDATE items SET "
+	args := []any{}
+	counter := 1
+
+	if newData.Name != "" {
+		query += fmt.Sprintf("name=$%d, ", counter)
+		args = append(args, newData.Name)
+		counter++
+	}
+
+	if newData.Note != "" {
+		query += fmt.Sprintf("note=$%d, ", counter)
+		args = append(args, newData.Note)
+		counter++
+	}
+
+	if newData.Status != "" {
+		query += fmt.Sprintf("current_status=$%d, ", counter)
+		args = append(args, newData.Status)
+		counter++
+	}
+
+	if newData.Name != "" || newData.Note != "" || newData.Status == "" {
+		query += "updated_at=now()"
+	}
+	query = strings.TrimRight(query, ", ")
+	query += fmt.Sprintf(" WHERE id=$%d AND deleted_at IS NULL RETURNING id", counter)
+	args = append(args, newData.ID)
+
+	var UpdatedId int
+	if err := i.DB.QueryRow(context.Background(), query, args...).Scan(&UpdatedId); err != nil {
+		if UpdatedId == 0 {
+			return errors.New("update failed: duplicate name or item not found")
 		}
 
 		return err

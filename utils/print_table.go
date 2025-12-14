@@ -65,3 +65,25 @@ func PrintTableItems(items []dto.ItemResponseDTO) {
 	}
 	table.Render()
 }
+
+func PrintTableItem(items []dto.ItemResponseDTO) {
+	table := tablewriter.NewWriter(os.Stdout)
+
+	table.Header([]string{"No", "ID", "Nama", "SKU", "Harga", "Tanggal Beli", "Status Barang", "Catatan"})
+
+	for i, t := range items {
+		row := []string{
+			fmt.Sprintf("%d", i+1),
+			fmt.Sprintf("%d", t.ID),
+			t.Name,
+			t.SKU,
+			fmt.Sprintf("Rp. %v", t.Price),
+			GetDateFormat(t.BuyDate),
+			t.Status,
+			t.Note,
+		}
+
+		table.Append(row)
+	}
+	table.Render()
+}

@@ -14,12 +14,14 @@ type InventoryServiceIface interface {
 	AddNewCategory(dto.CreateCategoryDTO) error
 	UpdateCategory(dto.UpdateCategoryDTO) error
 	DeleteCategoryById(dto.UpdateCategoryDTO) error
-	AddNewItem(dto.CreateItemDTO) error
-	GetItemsByCategoryId(dto.GetItemDTO) ([]dto.ItemResponseDTO, error)
 
 	// Item
 	GetItems() ([]dto.ItemResponseDTO, error)
 	DeleteItemById(dto.UpdateItemDTO) error
+	AddNewItem(dto.CreateItemDTO) error
+	GetItemsByCategoryId(dto.GetItemDTO) ([]dto.ItemResponseDTO, error)
+	GetItemById(dto.GetItemDTO) (dto.ItemResponseDTO, error)
+	UpdateItem(newData dto.UpdateItemDTO) error
 }
 
 type InventoryService struct {
@@ -129,6 +131,23 @@ func (s *InventoryService) GetItems() ([]dto.ItemResponseDTO, error) {
 	return itemsResponse, nil
 }
 
+func (s *InventoryService) GetItemById(id dto.GetItemDTO) (dto.ItemResponseDTO, error) {
+	item, err := s.repo.GetItemById(model.Item{ID: id.ItemID})
+	if err != nil {
+		return dto.ItemResponseDTO{}, err
+	}
+
+	return dto.ItemResponseDTO{
+		ID:      item.ID,
+		Name:    item.Name,
+		SKU:     item.SKU,
+		Price:   item.Price,
+		BuyDate: item.BuyDate,
+		Status:  item.Status,
+		Note:    item.Note,
+	}, nil
+
+}
 func (s *InventoryService) GetItemsByCategoryId(id dto.GetItemDTO) ([]dto.ItemResponseDTO, error) {
 	items, err := s.repo.GetItemsByCategoryId(model.Item{CategoryId: id.ItemID})
 	if err != nil {
@@ -165,6 +184,20 @@ func (s *InventoryService) AddNewItem(newItem dto.CreateItemDTO) error {
 
 func (s *InventoryService) DeleteItemById(item dto.UpdateItemDTO) error {
 	if err := s.repo.DeleteItemById(model.Item{ID: item.ID}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *InventoryService) UpdateItem(newData dto.UpdateItemDTO) error {
+
+	if err := s.repo.UpdateItem(model.Item{
+		ID:     newData.ID,
+		Name:   newData.Name,
+		Note:   newData.Note,
+		Status: newData.Status,
+	}); err != nil {
 		return err
 	}
 

@@ -29,6 +29,7 @@ func ItemManagement(handl handler.InventoryHandler) {
 			AddItem(handl)
 		case 3:
 			utils.ClearScreen()
+			UpdateItem(handl)
 		case 4:
 			utils.ClearScreen()
 			DeleteItem(handl)

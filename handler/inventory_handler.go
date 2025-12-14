@@ -75,6 +75,14 @@ func (h *InventoryHandler) GetItems() ([]dto.ItemResponseDTO, error) {
 	return items, nil
 }
 
+func (h *InventoryHandler) GetItemById(id int) (dto.ItemResponseDTO, error) {
+	items, err := h.service.GetItemById(dto.GetItemDTO{ItemID: id})
+	if err != nil {
+		return dto.ItemResponseDTO{}, err
+	}
+
+	return items, nil
+}
 func (h *InventoryHandler) GetItemsByCategoryId(id int) ([]dto.ItemResponseDTO, error) {
 	items, err := h.service.GetItemsByCategoryId(dto.GetItemDTO{ItemID: id})
 	if err != nil {
@@ -104,5 +112,13 @@ func (h *InventoryHandler) DeleteItemById(id int) error {
 	if err := h.service.DeleteItemById(dto.UpdateItemDTO{ID: id}); err != nil {
 		return err
 	}
+	return nil
+}
+
+func (h *InventoryHandler) UpdateItem(newData dto.UpdateItemDTO) error {
+	if err := h.service.UpdateItem(newData); err != nil {
+		return err
+	}
+
 	return nil
 }

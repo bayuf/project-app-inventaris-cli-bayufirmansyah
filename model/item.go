@@ -25,4 +25,5 @@ type Item struct {
 	SKU        string
 	LifeDays   int
 	Note       string
+	Status     string
 }
