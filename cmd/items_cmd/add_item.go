@@ -15,8 +15,8 @@ func AddItem(handl handler.InventoryHandler) {
 	for {
 		fmt.Println("=================== INVENTARIS KANTOR LUMOSHIVE =====================")
 		showAllCategory(handl)
-		fmt.Print("masukkan id category sebelum menambah items ID : ")
 		categoryId := 0
+		fmt.Print("masukkan id category sebelum menambah items ID : ")
 		fmt.Scan(&categoryId)
 		exists, err := handl.CheckCategory(categoryId)
 		if err != nil {

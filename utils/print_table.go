@@ -56,7 +56,7 @@ func PrintTableItems(items []dto.ItemResponseDTO) {
 			fmt.Sprintf("%d", t.ID),
 			t.Category,
 			t.Name,
-			fmt.Sprintf("Rp. %v", t.Price),
+			FormatRupiah(t.Price),
 			GetDateFormat(t.BuyDate),
 			fmt.Sprintf("%d Hari", t.TotalUsage),
 		}
@@ -77,7 +77,7 @@ func PrintTableItem(items []dto.ItemResponseDTO) {
 			fmt.Sprintf("%d", t.ID),
 			t.Name,
 			t.SKU,
-			fmt.Sprintf("Rp. %v", t.Price),
+			FormatRupiah(t.Price),
 			GetDateFormat(t.BuyDate),
 			t.Status,
 			t.Note,

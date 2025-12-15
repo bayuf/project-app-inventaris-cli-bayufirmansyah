@@ -12,15 +12,17 @@ import (
 
 func NameValidation(name string) string {
 	name = strings.TrimSpace(name)
+	name = regexp.MustCompile(`\s+`).ReplaceAllString(name, " ")
+
 	if name == "" {
 		log.Fatal("name is empty")
 	}
 
 	if len(name) < 3 || len(name) > 50 {
-		log.Fatal("name must 3 - 50 character")
+		log.Fatal("name must be 3 - 50 characters")
 	}
 
-	pattern := `^[A-Za-z]+(?: [A-Za-z]+)*$`
+	pattern := `^[A-Za-z0-9 ]+$`
 	re := regexp.MustCompile(pattern)
 
 	if !re.MatchString(name) {
@@ -28,6 +30,7 @@ func NameValidation(name string) string {
 	}
 
 	return name
+
 }
 
 func PriceValidation(price string) decimal.Decimal {
